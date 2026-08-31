@@ -21,14 +21,14 @@ function initializeThroughput(gates) {
 }
 
 function processGateFlow(gate, tickIndex) {
-  let currentTickQueue = gate.queue[tickIndex];
+  const currentTickQueue = gate.queue[tickIndex];
   let processed = 0;
   while (currentTickQueue > 0 && processed < gate.capacity) {
     currentTickQueue--;
     processed++;
   }
   return {
-    processed: processed,
+    processed,
     overflow: currentTickQueue,
   };
 }
@@ -38,7 +38,7 @@ function rerouteOverflow(gates, currentGate, tickIndex, overflowAmount) {
   const nextGateIndex = (currentIndex + 1) % gates.length;
   gates[nextGateIndex].queue[tickIndex] += overflowAmount;
   console.log(
-    overflowAmount + ' attendees rerouted to ' + gates[nextGateIndex].id,
+    `${overflowAmount} attendees rerouted to ${gates[nextGateIndex].id}`,
   );
 }
 
@@ -48,15 +48,15 @@ function handleGateAtTick(gates, gate, tickIndex, throughputSummary) {
   const result = processGateFlow(gate, tickIndex);
   throughputSummary[gate.id] += result.processed;
   if (result.overflow > 0) {
-    console.log('Overflow of ' + result.overflow + ' attendees. Rerouting...');
+    console.log(`Overflow of ${result.overflow} attendees. Rerouting...`);
     rerouteOverflow(gates, gate, tickIndex, result.overflow);
   }
 }
 
 function printSummary(summary) {
   console.log('\nThroughput Summary');
-  for (const gateId in summary) {
-    console.log(gateId + ': ' + summary[gateId] + ' attendees processed');
+  for (const [gateId, throughput] of Object.entries(summary)) {
+    console.log(`${gateId}: ${throughput} attendees processed`);
   }
 }
 
